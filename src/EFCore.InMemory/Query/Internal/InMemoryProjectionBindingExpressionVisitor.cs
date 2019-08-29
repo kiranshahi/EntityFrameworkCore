@@ -149,14 +149,15 @@ namespace Microsoft.EntityFrameworkCore.InMemory.Query.Internal
 
                     if (translation.Type != expression.Type)
                     {
-                        translation = Expression.Convert(translation, expression.Type);
+                        translation = translation.Type.IsNullableType() && !expression.Type.IsNullableType() && translation.Type.UnwrapNullableType() == expression.Type
+                            ? (Expression)Expression.Coalesce(translation, Expression.Default(expression.Type))
+                            : Expression.Convert(translation, expression.Type);
                     }
 
                     _projectionMapping[_projectionMembers.Peek()] = translation;
 
                     return new ProjectionBindingExpression(_queryExpression, _projectionMembers.Peek(), expression.Type);
                 }
-
             }
 
             return base.Visit(expression);
