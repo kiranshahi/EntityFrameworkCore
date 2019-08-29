@@ -268,8 +268,10 @@ namespace Microsoft.EntityFrameworkCore.InMemory.Query.Internal
                     return Visit(entityShaperExpression.ValueBufferExpression);
 
                 case ProjectionBindingExpression projectionBindingExpression:
-                    return ((InMemoryQueryExpression)projectionBindingExpression.QueryExpression)
-                        .GetMappedProjection(projectionBindingExpression.ProjectionMember);
+                    return projectionBindingExpression.ProjectionMember != null
+                        ? ((InMemoryQueryExpression)projectionBindingExpression.QueryExpression)
+                            .GetMappedProjection(projectionBindingExpression.ProjectionMember)
+                        : null;
 
                 case NullConditionalExpression nullConditionalExpression:
                 {
